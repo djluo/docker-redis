@@ -28,6 +28,7 @@ foreach my $dir (@dirs) {
     system("chown docker.docker -R " . $dir);
   }
 }
+system("chmod","750","/redis/data");
 
 # 切换当前运行用户,先切GID.
 #$GID = $EGID = $gid;
