@@ -1,12 +1,11 @@
 FROM docker.xlands-inc.com/baoyu/debian
 MAINTAINER djluo <dj.luo@baoyugame.com>
 
-ADD http://www.dotdeb.org/dotdeb.gpg /dotdeb.gpg
+COPY ./preferences /etc/apt/preferences.d/redis
 RUN export http_proxy="http://172.17.42.1:8080/" \
     && export DEBIAN_FRONTEND=noninteractive     \
-    && apt-key add /dotdeb.gpg \
-    && echo 'deb http://packages.dotdeb.org wheezy all' \
-            > /etc/apt/sources.list.d/dotdeb.list \
+    && echo 'deb http://ftp.cn.debian.org/debian sid main contrib' \
+            >> /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y redis-server \
     && apt-get clean     \
@@ -21,8 +20,8 @@ RUN export http_proxy="http://172.17.42.1:8080/" \
     && rm -rf usr/share/info   \
     && find var/lib/apt -type f -exec rm -fv {} \;
 
-ADD ./entrypoint.pl      /entrypoint.pl
-ADD ./redis.conf         /redis/redis.conf
+COPY ./entrypoint.pl      /entrypoint.pl
+COPY ./redis.conf         /redis/redis.conf
 
 ENTRYPOINT ["/entrypoint.pl"]
 CMD        ["/usr/bin/redis-server", "/redis/redis.conf"]

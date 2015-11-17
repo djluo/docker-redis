@@ -1,0 +1,3 @@
+Package: redis-*
+Pin: release a=sid
+Pin-Priority: 910
