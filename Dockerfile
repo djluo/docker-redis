@@ -21,7 +21,7 @@ RUN export http_proxy="http://172.17.42.1:8080/" \
     && find var/lib/apt -type f -exec rm -fv {} \;
 
 COPY ./entrypoint.pl      /entrypoint.pl
-COPY ./redis.conf         /redis/redis.conf
+COPY ./redis.conf         /example-redis.conf
 
 ENTRYPOINT ["/entrypoint.pl"]
-CMD        ["/usr/bin/redis-server", "/redis/redis.conf"]
+CMD        ["/usr/bin/redis-server", "/example-redis.conf"]

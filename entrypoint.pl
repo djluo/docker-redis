@@ -15,20 +15,30 @@ use strict;
 
 my $uid = 1000;
 my $gid = 1000;
+my $key = 0;
 
+$key = $ENV{'PASSWD'}         if $ENV{'PASSWD'};
 $uid = $gid = $ENV{'User_Id'} if $ENV{'User_Id'} =~ /\d+/;
 
 unless (getpwuid("$uid")){
   system("/usr/sbin/useradd", "-s", "/bin/false", "-U", "-u $uid", "-m", "docker");
 }
 
-my @dirs = ("/redis/logs", "/redis/data");
+my @dirs = ("/redis/logs", "/redis/data", "/redis/conf");
 foreach my $dir (@dirs) {
+  system("mkdir", "-p", "$dir") unless ( -d $dir );
   if ( -d $dir && (stat($dir))[4] != $uid ){
     system("chown docker.docker -R " . $dir);
   }
 }
-system("chmod","750","/redis/data");
+
+my $conf = "/redis/conf/redis.conf";
+system("cp", "-a", "/example-redis.conf", "$conf") unless ( -f "$conf");
+system("sed", "-i", "s/^#requirepass foobared/requirepass $key/", "$conf") if ($key);
+
+system("chmod", "640",    "$conf");
+system("chgrp", "docker", "$conf");
+system("chmod", "750", "/redis/data");
 
 # 切换当前运行用户,先切GID.
 #$GID = $EGID = $gid;

@@ -31,19 +31,18 @@ _port
 _run() {
   local mode="-d --restart=always"
   local name="$container_name"
-  local cmd="/usr/bin/redis-server /redis/redis.conf"
-
-  [ -f ${current_dir}/redis.conf ] \
-    && local volume="-v ${current_dir}/redis.conf:/redis/redis.conf:ro" \
+  local cmd="/usr/bin/redis-server /redis/conf/redis.conf"
 
   [ "x$1" == "xdebug" ] && _run_debug
 
+    #-e "PASSWD=xlands"        \
   sudo docker run $mode $port \
     -e "User_Id=${User_Id}"   \
     -e "TZ=Asia/Shanghai"     \
     $volume \
     -v ${current_dir}/logs:/redis/logs \
     -v ${current_dir}/data:/redis/data \
+    -v ${current_dir}/conf:/redis/conf \
     --name ${name} ${images} \
     $cmd
 }
